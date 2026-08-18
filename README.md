@@ -22,13 +22,22 @@ cp .env.example .env
 bun install
 ```
 
-### 4. Fast Setup (Databases & Prisma)
-Run our custom setup script. This single command will spin up Postgres and Qdrant in Docker, run Prisma migrations, and generate the Prisma Client:
+### 4. Start Docker Containers
+Ensure your Docker desktop application is running. Then, spin up the Postgres and Qdrant databases using docker compose:
 ```bash
-bun run setup
+bun run docker:up
+# Or manually: docker compose up -d
+```
+*Note: Wait a few seconds for the containers to fully initialize before proceeding to the next step.*
+
+### 5. Setup Database (Prisma)
+With the databases running, apply the database schema and generate the Prisma Client:
+```bash
+bun run db:migrate
+bun run db:generate
 ```
 
-### 5. Start the Application
+### 6. Start the Application
 ```bash
 bun dev
 ```
