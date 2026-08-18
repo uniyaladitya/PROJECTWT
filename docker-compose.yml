@@ -1,0 +1,26 @@
+services:
+  appDB:
+    image: postgres:16-alpine
+    container_name: app-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d appdb" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  appVectorDB:
+    image: qdrant/qdrant:latest
+    container_name: app-vector-db
+    ports:
+      - "6333:6333"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:6333/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
