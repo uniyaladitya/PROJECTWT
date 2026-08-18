@@ -1,1 +1,0 @@
-// health check bith input and output for the service types

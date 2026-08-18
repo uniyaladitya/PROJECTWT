@@ -24,4 +24,10 @@ export class ENV {
     if (!val) throw new Error("Missing OPENAI_API_KEY");
     return val;
   }
+
+  static get JWT_SECRET(): string {
+    const val = process.env.JWT_SECRET;
+    if (!val) throw new Error("Missing JWT_SECRET");
+    return val;
+  }
 }
