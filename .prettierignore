@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+.bun/
+
+# Next.js build output
+.next/
+out/
+build/
+
+# Coverage
+coverage/
+
+# IDE and Editor
+.idea/
+.vscode/
+
+# Environment files
+.env
+.env.*
+
+# Generated Code
+lib/generated/prisma/
+
+# Misc
+.DS_Store
+*.pem
