@@ -17,5 +17,5 @@ DAY 1 — BACKEND
 [X] Save user message
 [X] Save AI response
 [X] Swagger documentation
-[ ] Test 5 scenarios
+[X] Test 5 scenarios
 [X] Give API contract to UI team
