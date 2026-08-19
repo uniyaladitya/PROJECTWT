@@ -1,6 +1,4 @@
-import { z } from "zod";
 import {
-  extendZodWithOpenApi,
   OpenAPIRegistry,
   OpenApiGeneratorV3,
 } from "@asteasolutions/zod-to-openapi";
@@ -10,9 +8,8 @@ import {
   createUserDto,
 } from "@/lib/features/auth/dto/auth.dto";
 
-extendZodWithOpenApi(z);
-
 export const registry = new OpenAPIRegistry();
+
 
 /**
  * Security
