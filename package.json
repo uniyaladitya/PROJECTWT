@@ -19,6 +19,7 @@
     "setup": "bun run docker:up && bun run db:migrate && bun run db:generate"
   },
   "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^9.1.0",
     "@base-ui/react": "^1.7.0",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",

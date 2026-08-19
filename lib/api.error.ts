@@ -43,6 +43,20 @@ export class ApiError extends Error {
       );
     }
 
+    // Handle Zod validation errors
+    if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {
+      const zodError = error as any;
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Validation Error",
+          errors: zodError.errors.map((e: any) => e.message),
+          data: null,
+        },
+        { status: 400 }
+      );
+    }
+
     console.error("Unhandled API Error:", error);
 
     const errorMessage = error instanceof Error ? error.message : "Internal Server Error";
