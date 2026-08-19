@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export class ApiResponse<T = any> {
+export class ApiResponse<T = unknown> {
   public statusCode: number;
   public data: T;
   public message: string;
@@ -21,6 +21,6 @@ export class ApiResponse<T = any> {
    * @returns NextResponse
    */
   static success<T>(data: T, message = "Success", statusCode = 200) {
-    return NextResponse.json(new ApiResponse(statusCode, data, message), { status: statusCode });
+    return NextResponse.json({ success: true, data, message }, { status: statusCode });
   }
 }

@@ -1,7 +1,10 @@
 import { prisma } from "@/lib/db/prisma";
-import { analyzeRequestDto, AnalyzeRequest } from "../dto/analyze.dto";
+import { analyzeRequestDto, analysisSchema, AnalyzeRequest } from "../dto/analyze.dto";
 import { AnalyzeResponse } from "../types/types";
 import { ApiError } from "@/lib/api.error";
+import { buildPrompt } from "../utils/prompt";
+import gemma from "@/lib/ollama";
+import { generateObject, generateText } from "ai";
 
 export class CivicAnalysisService {
   /**
@@ -16,6 +19,7 @@ export class CivicAnalysisService {
 
     // --- Resolve or create conversation ---
     let conversationId = data.conversationId;
+    let priorMessages: { type: "user" | "ai"; content: string }[] = [];
 
     if (conversationId) {
       // Verify conversation belongs to this user
@@ -30,6 +34,12 @@ export class CivicAnalysisService {
       if (existing.userId !== userId) {
         throw new ApiError(403, "Forbidden: conversation does not belong to you");
       }
+
+      priorMessages = await prisma.message.findMany({
+        where: { conversationId },
+        orderBy: { createdAt: "asc" },
+        select: { type: true, content: true },
+      });
     } else {
       // Create a new conversation with a title derived from the query
       const title = data.query.slice(0, 80) + (data.query.length > 80 ? "…" : "");
@@ -48,23 +58,38 @@ export class CivicAnalysisService {
       },
     });
 
-    // --- TODO: Integrate LLM (Task 10) ---
-    // Placeholder analysis — will be replaced by real AI call
-    const placeholderAnalysis = {
-      category: "GENERAL" as const,
-      summary: "Analysis pending LLM integration.",
-      legalBasis: "To be determined",
-      recommendedActions: [
-        "Consult a legal expert",
-        "File a complaint with the relevant authority",
-      ],
-      relevantAuthorities: [
-        { name: "District Collector Office", role: "General grievance redressal" },
-      ],
-      estimatedResolutionTime: "30-60 days",
-    };
+    const messages = buildPrompt(data.query, priorMessages);
+    let analysis;
 
-    const aiContent = JSON.stringify(placeholderAnalysis);
+    try {
+      const result = await generateObject({
+        model: gemma,
+        schema: analysisSchema,
+        schemaName: "CivicAnalysis",
+        messages,
+        repairText: async ({ text }) => {
+          const start = text.indexOf("{");
+          const end = text.lastIndexOf("}");
+          return start >= 0 && end > start ? text.slice(start, end + 1) : text;
+        },
+      });
+      analysis = result.object;
+    } catch (error) {
+      console.error("Structured civic analysis failed:", error);
+      const fallback = await generateText({ model: gemma, messages });
+      const start = fallback.text.indexOf("{");
+      const end = fallback.text.lastIndexOf("}");
+      if (start < 0 || end <= start) {
+        throw new ApiError(502, "The analysis model returned an invalid response");
+      }
+      try {
+        analysis = analysisSchema.parse(JSON.parse(fallback.text.slice(start, end + 1)));
+      } catch {
+        throw new ApiError(502, "The analysis model returned an invalid response");
+      }
+    }
+
+    const aiContent = JSON.stringify(analysis);
 
     // --- Save AI response ---
     const aiMessage = await prisma.message.create({
@@ -79,7 +104,7 @@ export class CivicAnalysisService {
       conversationId,
       userMessageId: userMessage.id,
       aiMessageId: aiMessage.id,
-      analysis: placeholderAnalysis,
+      analysis,
     };
   }
 }

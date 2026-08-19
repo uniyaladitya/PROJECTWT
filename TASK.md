@@ -7,15 +7,15 @@ DAY 1 — BACKEND
 [X] Create request validation
 [X] Define AnalyzeResponse type
 [X] Create civicAnalysis feature
-[ ] Integrate LLM
-[ ] Structured AI output
-[ ] RTI classification
-[ ] Tenancy classification
-[ ] Welfare classification
-[ ] Basic authority mapping
-[ ] Save conversation
-[ ] Save user message
-[ ] Save AI response
-[ ] Swagger documentation
+[X] Integrate LLM
+[X] Structured AI output
+[X] RTI classification
+[X] Tenancy classification
+[X] Welfare classification
+[X] Basic authority mapping
+[X] Save conversation
+[X] Save user message
+[X] Save AI response
+[X] Swagger documentation
 [ ] Test 5 scenarios
-[ ] Give API contract to UI team
+[X] Give API contract to UI team

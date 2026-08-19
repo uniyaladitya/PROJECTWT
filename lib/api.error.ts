@@ -2,14 +2,14 @@ import { NextResponse } from "next/server";
 
 export class ApiError extends Error {
   public statusCode: number;
-  public data: any | null;
+  public data: unknown | null;
   public success: boolean;
-  public errors: any[];
+  public errors: unknown[];
 
   constructor(
     statusCode: number,
     message = "Something went wrong",
-    errors: any[] = [],
+    errors: unknown[] = [],
     stack = "",
   ) {
     super(message);
@@ -33,26 +33,15 @@ export class ApiError extends Error {
   static handle(error: unknown) {
     if (error instanceof ApiError) {
       return NextResponse.json(
-        {
-          success: error.success,
-          message: error.message,
-          errors: error.errors,
-          data: error.data,
-        },
+        { success: false, data: null, error: { code: error.statusCode, message: error.message } },
         { status: error.statusCode },
       );
     }
 
     // Handle Zod validation errors
     if (error && typeof error === "object" && "name" in error && error.name === "ZodError") {
-      const zodError = error as any;
       return NextResponse.json(
-        {
-          success: false,
-          message: "Validation Error",
-          errors: zodError.errors.map((e: any) => e.message),
-          data: null,
-        },
+        { success: false, data: null, error: { code: 400, message: "Validation Error" } },
         { status: 400 },
       );
     }
@@ -62,12 +51,7 @@ export class ApiError extends Error {
     const errorMessage = error instanceof Error ? error.message : "Internal Server Error";
 
     return NextResponse.json(
-      {
-        success: false,
-        message: "Internal Server Error",
-        errors: [errorMessage],
-        data: null,
-      },
+      { success: false, data: null, error: { code: 500, message: errorMessage } },
       { status: 500 },
     );
   }

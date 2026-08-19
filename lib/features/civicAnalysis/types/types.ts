@@ -1,19 +1,6 @@
-export type IssueCategory = "RTI" | "TENANCY" | "WELFARE" | "GENERAL";
+import type { AnalysisResult } from "../dto/analyze.dto";
 
-export interface AuthorityMapping {
-  name: string;
-  role: string;
-  contactHint?: string;
-}
-
-export interface AnalysisResult {
-  category: IssueCategory;
-  summary: string;
-  legalBasis: string;
-  recommendedActions: string[];
-  relevantAuthorities: AuthorityMapping[];
-  estimatedResolutionTime?: string;
-}
+export type { AnalysisResult };
 
 export interface AnalyzeResponse {
   conversationId: string;

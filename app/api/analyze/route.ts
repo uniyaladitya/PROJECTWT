@@ -3,23 +3,7 @@ import { CivicAnalysisService } from "@/lib/features/civicAnalysis/service/civic
 import { analyzeRequestDto } from "@/lib/features/civicAnalysis/dto/analyze.dto";
 import { ApiResponse } from "@/lib/api.response";
 import { ApiError } from "@/lib/api.error";
-import { ENV } from "@/lib/env";
-import jwt from "jsonwebtoken";
-
-function extractUserId(req: NextRequest): string {
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    throw new ApiError(401, "Missing or invalid Authorization header");
-  }
-
-  const token = authHeader.slice(7);
-  try {
-    const payload = jwt.verify(token, ENV.JWT_SECRET) as { userId: string; role: string };
-    return payload.userId;
-  } catch {
-    throw new ApiError(401, "Invalid or expired token");
-  }
-}
+import { getCurrentUser } from "@/lib/features/auth/utils/auth.util";
 
 /**
  * POST /api/analyze
@@ -30,7 +14,7 @@ function extractUserId(req: NextRequest): string {
  */
 export async function POST(req: NextRequest) {
   try {
-    const userId = extractUserId(req);
+    const { userId } = getCurrentUser(req);
     const body = await req.json();
 
     // Validate request body
