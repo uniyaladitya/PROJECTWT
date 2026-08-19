@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const result = await AuthService.login(body);
-    
+
     return ApiResponse.success(result, "User logged in successfully", 200);
   } catch (error) {
     return ApiError.handle(error);

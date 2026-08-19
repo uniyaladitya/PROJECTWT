@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { createUserDto, loginUserDto } from '../dto/auth.dto';
+import { z } from "zod";
+import { createUserDto, loginUserDto } from "../dto/auth.dto";
 
 export type CreateUserInput = z.infer<typeof createUserDto>;
 export type LoginUserInput = z.infer<typeof loginUserDto>;

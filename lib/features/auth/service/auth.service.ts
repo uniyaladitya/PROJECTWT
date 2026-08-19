@@ -8,15 +8,15 @@ import { ENV } from "@/lib/env";
 
 export class AuthService {
   private static generateToken(userId: string, role: string) {
-    return jwt.sign({ userId, role }, ENV.JWT_SECRET, { expiresIn: '7d' });
+    return jwt.sign({ userId, role }, ENV.JWT_SECRET, { expiresIn: "7d" });
   }
 
   static async signup(inputs: CreateUserInput): Promise<AuthResponse> {
     const data = createUserDto.parse(inputs);
-    
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email: data.email }
+      where: { email: data.email },
     });
 
     if (existingUser) {
@@ -32,7 +32,7 @@ export class AuthService {
         email: data.email,
         passwordHash,
         role: data.role,
-      }
+      },
     });
 
     const token = this.generateToken(user.id, user.role);
@@ -44,7 +44,7 @@ export class AuthService {
         name: user.name,
         role: user.role,
       },
-      token
+      token,
     };
   }
 
@@ -52,7 +52,7 @@ export class AuthService {
     const data = loginUserDto.parse(inputs);
 
     const user = await prisma.user.findUnique({
-      where: { email: data.email }
+      where: { email: data.email },
     });
 
     if (!user) {
@@ -74,14 +74,14 @@ export class AuthService {
         name: user.name,
         role: user.role,
       },
-      token
+      token,
     };
   }
 
   static async getMe(userId: string) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true, name: true, role: true }
+      select: { id: true, email: true, name: true, role: true },
     });
 
     if (!user) {

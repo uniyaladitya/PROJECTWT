@@ -10,7 +10,7 @@ export class ApiError extends Error {
     statusCode: number,
     message = "Something went wrong",
     errors: any[] = [],
-    stack = ""
+    stack = "",
   ) {
     super(message);
     this.statusCode = statusCode;
@@ -39,12 +39,12 @@ export class ApiError extends Error {
           errors: error.errors,
           data: error.data,
         },
-        { status: error.statusCode }
+        { status: error.statusCode },
       );
     }
 
     // Handle Zod validation errors
-    if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {
+    if (error && typeof error === "object" && "name" in error && error.name === "ZodError") {
       const zodError = error as any;
       return NextResponse.json(
         {
@@ -53,7 +53,7 @@ export class ApiError extends Error {
           errors: zodError.errors.map((e: any) => e.message),
           data: null,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -66,9 +66,9 @@ export class ApiError extends Error {
         success: false,
         message: "Internal Server Error",
         errors: [errorMessage],
-        data: null
+        data: null,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

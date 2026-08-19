@@ -1,15 +1,8 @@
-import {
-  OpenAPIRegistry,
-  OpenApiGeneratorV3,
-} from "@asteasolutions/zod-to-openapi";
+import { OpenAPIRegistry, OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
 
-import {
-  loginUserDto,
-  createUserDto,
-} from "@/lib/features/auth/dto/auth.dto";
+import { loginUserDto, createUserDto } from "@/lib/features/auth/dto/auth.dto";
 
 export const registry = new OpenAPIRegistry();
-
 
 /**
  * Security

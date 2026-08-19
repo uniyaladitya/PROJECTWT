@@ -1,14 +1,15 @@
-import { qdrantClient } from "./connect"
-import { ENV } from "@/lib/env"
+import { qdrantClient } from "./connect";
+import { ENV } from "@/lib/env";
 
 export const createQdrantCollection = async () => {
+  const { collections } = await qdrantClient.getCollections();
 
-  const { collections } = await qdrantClient.getCollections()
-
-  const exists = collections.find((collection) => collection.name === ENV.VECTOR_DB_COLLECTION_NAME)
+  const exists = collections.find(
+    (collection) => collection.name === ENV.VECTOR_DB_COLLECTION_NAME,
+  );
 
   if (exists) {
-    console.log("Collection already exists")
+    console.log("Collection already exists");
     return;
   }
 
@@ -37,9 +38,9 @@ export const createQdrantCollection = async () => {
   });
 
   console.log(`Collection ${ENV.VECTOR_DB_COLLECTION_NAME} created successfully`);
-}
+};
 
 export const deleteQdrantCollection = async () => {
-  await qdrantClient.deleteCollection(ENV.VECTOR_DB_COLLECTION_NAME)
+  await qdrantClient.deleteCollection(ENV.VECTOR_DB_COLLECTION_NAME);
   console.log(`Collection ${ENV.VECTOR_DB_COLLECTION_NAME} deleted successfully`);
-}
+};

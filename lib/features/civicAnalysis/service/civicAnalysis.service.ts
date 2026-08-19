@@ -54,7 +54,10 @@ export class CivicAnalysisService {
       category: "GENERAL" as const,
       summary: "Analysis pending LLM integration.",
       legalBasis: "To be determined",
-      recommendedActions: ["Consult a legal expert", "File a complaint with the relevant authority"],
+      recommendedActions: [
+        "Consult a legal expert",
+        "File a complaint with the relevant authority",
+      ],
       relevantAuthorities: [
         { name: "District Collector Office", role: "General grievance redressal" },
       ],

@@ -21,9 +21,6 @@ export class ApiResponse<T = any> {
    * @returns NextResponse
    */
   static success<T>(data: T, message = "Success", statusCode = 200) {
-    return NextResponse.json(
-      new ApiResponse(statusCode, data, message),
-      { status: statusCode }
-    );
+    return NextResponse.json(new ApiResponse(statusCode, data, message), { status: statusCode });
   }
 }
