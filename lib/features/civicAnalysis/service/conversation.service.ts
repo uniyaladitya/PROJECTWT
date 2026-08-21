@@ -12,6 +12,15 @@ async function assertConversationOwner(conversationId: string, userId: string) {
 }
 
 export class ConversationService {
+  static async create(userId: string, title: string = "New Conversation") {
+    return prisma.conversation.create({
+      data: {
+        userId,
+        title,
+      },
+    });
+  }
+
   static list(userId: string) {
     return prisma.conversation.findMany({
       where: { userId },

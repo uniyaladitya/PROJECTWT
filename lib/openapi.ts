@@ -111,6 +111,24 @@ registry.registerPath({
 });
 
 registry.registerPath({
+  method: "post",
+  path: "/api/conversations",
+  summary: "Create a new conversation",
+  tags: ["Conversations"],
+  security: [{ BearerAuth: [] }],
+  request: {
+    body: {
+      required: false,
+      content: { "application/json": { schema: z.object({ title: z.string().optional() }) } },
+    },
+  },
+  responses: {
+    200: { description: "Conversation created", content: { "application/json": { schema: conversationSchema } } },
+    401: { description: "Authentication required" },
+  },
+});
+
+registry.registerPath({
   method: "get",
   path: "/api/conversations/{conversationId}",
   summary: "Get a conversation and its messages",

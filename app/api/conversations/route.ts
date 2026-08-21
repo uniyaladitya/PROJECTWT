@@ -12,3 +12,14 @@ export async function GET(req: NextRequest) {
     return ApiError.handle(error);
   }
 }
+
+export async function POST(req: NextRequest) {
+  try {
+    const { userId } = getCurrentUser(req);
+    const body = await req.json().catch(() => ({}));
+    const title = body.title || "New Conversation";
+    return ApiResponse.success(await ConversationService.create(userId, title));
+  } catch (error) {
+    return ApiError.handle(error);
+  }
+}
