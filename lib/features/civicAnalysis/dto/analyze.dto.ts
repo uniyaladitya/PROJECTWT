@@ -2,7 +2,7 @@ import { z } from "@/lib/zod-openapi";
 
 export const analysisSchema = z
   .object({
-    category: z.enum(["RTI", "TENANCY", "WELFARE", "GENERAL"]),
+    category: z.enum(["RTI", "TENANCY", "WELFARE", "GENERAL", "UNKNOWN"]),
     summary: z.string(),
     issues: z.array(z.string()),
     recommendedActions: z.array(z.string()),

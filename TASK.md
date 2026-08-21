@@ -21,21 +21,21 @@
 [x] Environment variable validation
 [x] Health check endpoint
 
-[ ] AI Backend
-[ ] Unknown/unsupported issue handling
-[ ] LLM timeout handling
-[ ] LLM fallback handling
-[ ] Configure model through environment
+[x] AI Backend
+[x] Unknown/unsupported issue handling
+[x] LLM timeout handling
+[x] LLM fallback handling
+[x] Configure model through environment
 
-[ ] Backend Integration
-[ ] Connect authentication → agent
-[ ] Connect conversation → agent
-[ ] Connect agent → civicAnalysis
-[ ] Connect agent → database
-[ ] Complete end-to-end agent flow
+[x] Backend Integration
+[x] Connect authentication → agent
+[x] Connect conversation → agent
+[x] Connect agent → civicAnalysis
+[x] Connect agent → database
+[x] Complete end-to-end agent flow
 
-[ ] Final Backend Handoff
-[ ] Update Swagger with new endpoints
-[ ] Update API contract for UI
-[ ] Verify frontend-required response structures
-[ ] Final backend flow verification
+[x] Final Backend Handoff
+[x] Update Swagger with new endpoints
+[x] Update API contract for UI
+[x] Verify frontend-required response structures
+[x] Final backend flow verification

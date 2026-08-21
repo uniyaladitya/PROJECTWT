@@ -49,6 +49,7 @@ export class AgentService {
         schema: analysisSchema,
         schemaName: "CivicAnalysis",
         messages,
+        abortSignal: AbortSignal.timeout(30000), // 30 seconds timeout
         repairText: async ({ text }) => {
           const start = text.indexOf("{");
           const end = text.lastIndexOf("}");
@@ -58,7 +59,17 @@ export class AgentService {
       analysis = result.object;
     } catch (error) {
       console.error("Structured civic analysis failed:", error);
-      const fallback = await generateText({ model: gemma, messages });
+      
+      // If error is a timeout, throw immediately
+      if (error instanceof Error && error.name === "TimeoutError") {
+        throw new ApiError(504, "The analysis model timed out");
+      }
+
+      const fallback = await generateText({ 
+        model: gemma, 
+        messages,
+        abortSignal: AbortSignal.timeout(30000), // 30 seconds timeout
+      });
       const start = fallback.text.indexOf("{");
       const end = fallback.text.lastIndexOf("}");
       if (start < 0 || end <= start) {

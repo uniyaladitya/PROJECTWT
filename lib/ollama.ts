@@ -1,9 +1,10 @@
 import { createOllama } from "ollama-ai-provider-v2";
+import { ENV } from "./env";
 
 const ollama = createOllama({
-  baseURL: "http://localhost:11434/api",
+  baseURL: ENV.OLLAMA_URL,
 });
 
-const gemma = ollama("gemma4:e4b");
+const gemma = ollama(ENV.OLLAMA_MODEL);
 
 export default gemma;

@@ -70,6 +70,79 @@ registry.registerPath({
 });
 
 registry.registerPath({
+  method: "get",
+  path: "/api/users/me",
+  summary: "Get current user profile",
+  tags: ["Users"],
+  security: [{ BearerAuth: [] }],
+  responses: {
+    200: { description: "User profile retrieved" },
+    401: { description: "Authentication required" },
+    404: { description: "User not found" },
+  },
+});
+
+registry.registerPath({
+  method: "patch",
+  path: "/api/users/me",
+  summary: "Update current user profile",
+  tags: ["Users"],
+  security: [{ BearerAuth: [] }],
+  request: {
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: z.object({ name: z.string().min(2).optional() }),
+        },
+      },
+    },
+  },
+  responses: {
+    200: { description: "User profile updated" },
+    400: { description: "Invalid request" },
+    401: { description: "Authentication required" },
+  },
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/api/users/me/password",
+  summary: "Change current user password",
+  tags: ["Users"],
+  security: [{ BearerAuth: [] }],
+  request: {
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: z.object({
+            oldPassword: z.string().min(1),
+            newPassword: z.string().min(6),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    200: { description: "Password changed successfully" },
+    400: { description: "Invalid old password or request" },
+    401: { description: "Authentication required" },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/health-check",
+  summary: "API Health Check",
+  tags: ["Health"],
+  responses: {
+    200: { description: "All services are up and running." },
+    503: { description: "One or more services are down." },
+  },
+});
+
+registry.registerPath({
   method: "post",
   path: "/api/analyze",
   summary: "Analyze a civic issue",

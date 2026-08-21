@@ -30,4 +30,12 @@ export class ENV {
     if (!val) throw new Error("Missing JWT_SECRET");
     return val;
   }
+
+  static get OLLAMA_URL(): string {
+    return process.env.OLLAMA_URL || "http://localhost:11434/api";
+  }
+
+  static get OLLAMA_MODEL(): string {
+    return process.env.OLLAMA_MODEL || "gemma4:e4b";
+  }
 }

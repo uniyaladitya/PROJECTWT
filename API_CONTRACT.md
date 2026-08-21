@@ -102,6 +102,122 @@ Authenticate an existing user.
 
 ---
 
+### Users
+
+#### `GET /api/users/me` 🔒
+
+Get the authenticated user's profile.
+
+**Response `200`**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "cuid...",
+    "name": "Priya Sharma",
+    "email": "priya@example.com",
+    "role": "user",
+    "createdAt": "2026-08-19T11:00:00.000Z",
+    "updatedAt": "2026-08-19T11:00:00.000Z"
+  },
+  "message": "Profile retrieved successfully"
+}
+```
+
+| Error Code | Meaning |
+|---|---|
+| `401` | Missing or expired token |
+| `404` | User not found |
+
+---
+
+#### `PATCH /api/users/me` 🔒
+
+Update the authenticated user's profile.
+
+**Request**
+```json
+{
+  "name": "Priya Singh"
+}
+```
+
+**Response `200`**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "cuid...",
+    "name": "Priya Singh",
+    "email": "priya@example.com",
+    "role": "user",
+    "createdAt": "2026-08-19T11:00:00.000Z",
+    "updatedAt": "2026-08-20T11:00:00.000Z"
+  },
+  "message": "Profile updated successfully"
+}
+```
+
+| Error Code | Meaning |
+|---|---|
+| `400` | Validation error (e.g. name too short) |
+| `401` | Missing or expired token |
+
+---
+
+#### `POST /api/users/me/password` 🔒
+
+Change the authenticated user's password.
+
+**Request**
+```json
+{
+  "oldPassword": "securepass123",
+  "newPassword": "newsecurepass456"
+}
+```
+
+**Response `200`**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Password updated successfully"
+  },
+  "message": "Password changed successfully"
+}
+```
+
+| Error Code | Meaning |
+|---|---|
+| `400` | Invalid old password or validation error |
+| `401` | Missing or expired token |
+
+---
+
+### Infrastructure
+
+#### `GET /api/health-check`
+
+Get the health status of the API and its dependencies (Database, Vector DB, etc.).
+
+**Response `200`**
+```json
+{
+  "status": "ok",
+  "details": {
+    "database": "ok",
+    "vectorDb": "ok"
+  }
+}
+```
+
+| Error Code | Meaning |
+|---|---|
+| `503` | One or more services are down |
+
+---
+
 ### Analysis
 
 #### `POST /api/analyze` 🔒
