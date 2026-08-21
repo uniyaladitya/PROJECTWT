@@ -1,15 +1,41 @@
-[ ] `bun run tsc --noEmit` passes
+[x] Agent Backend
+[x] Create /api/v1/agent/chat
+[x] Connect agent with civicAnalysis
+[x] Connect agent with conversation
+[x] Define agent system prompt
+[x] Define agent response schema
+[x] Validate agent output
+[x] Handle LLM failure
+[x] Handle invalid AI output
 
-[ ] Fresh user can authenticate
+[ ] User APIs
+[ ] GET /api/v1/users/me
+[ ] Update user profile API
+[ ] Change password API
 
-[ ] /api/v1/analyze works with real Ollama
+[ ] API Infrastructure
+[ ] Global error handler
+[ ] Standard API error response
+[ ] Standard API success response
+[ ] CORS configuration
+[ ] Environment variable validation
+[ ] Health check endpoint
 
-[ ] AI output matches the Zod schema
+[ ] AI Backend
+[ ] Unknown/unsupported issue handling
+[ ] LLM timeout handling
+[ ] LLM fallback handling
+[ ] Configure model through environment
 
-[ ] Conversation is persisted
+[ ] Backend Integration
+[ ] Connect authentication → agent
+[ ] Connect conversation → agent
+[ ] Connect agent → civicAnalysis
+[ ] Connect agent → database
+[ ] Complete end-to-end agent flow
 
-[ ] User + AI messages are persisted
-
-[ ] Swagger examples match actual responses
-
-[ ] UI team has the final API contract
+[ ] Final Backend Handoff
+[ ] Update Swagger with new endpoints
+[ ] Update API contract for UI
+[ ] Verify frontend-required response structures
+[ ] Final backend flow verification

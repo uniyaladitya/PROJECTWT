@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { CivicAnalysisService } from "@/lib/features/civicAnalysis/service/civicAnalysis.service";
+import { AgentService } from "@/lib/features/agent/service/agent.service";
 import { analyzeRequestDto } from "@/lib/features/civicAnalysis/dto/analyze.dto";
 import { ApiResponse } from "@/lib/api.response";
 import { ApiError } from "@/lib/api.error";
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     // Validate request body
     const input = analyzeRequestDto.parse(body);
 
-    const result = await CivicAnalysisService.analyze(userId, input);
+    const result = await AgentService.chat(userId, input);
 
     return ApiResponse.success(result, "Analysis completed successfully", 200);
   } catch (error) {

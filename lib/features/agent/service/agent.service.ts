@@ -1,51 +1,32 @@
 import { prisma } from "@/lib/db/prisma";
-import { analyzeRequestDto, analysisSchema, AnalyzeRequest } from "../dto/analyze.dto";
-import { AnalyzeResponse } from "../types/types";
+import { AnalyzeRequest, analysisSchema } from "@/lib/features/civicAnalysis/dto/analyze.dto";
+import { AnalyzeResponse } from "@/lib/features/civicAnalysis/types/types";
 import { ApiError } from "@/lib/api.error";
-import { buildPrompt } from "../utils/prompt";
+import { buildPrompt } from "@/lib/features/civicAnalysis/utils/prompt";
 import gemma from "@/lib/ollama";
 import { generateObject, generateText } from "ai";
+import { ConversationService } from "@/lib/features/civicAnalysis/service/conversation.service";
 
-export class CivicAnalysisService {
+export class AgentService {
   /**
-   * Analyze a civic issue query.
-   * Creates or continues a conversation, saves user message and AI response.
-   *
-   * @param userId  Authenticated user's ID
-   * @param input   Validated analyze request body
+   * Process a chat message, coordinating with CivicAnalysis and Conversation services.
    */
-  static async analyze(userId: string, input: AnalyzeRequest): Promise<AnalyzeResponse> {
-    const data = analyzeRequestDto.parse(input);
-
+  static async chat(userId: string, input: AnalyzeRequest): Promise<AnalyzeResponse> {
     // --- Resolve or create conversation ---
-    let conversationId = data.conversationId;
+    let conversationId = input.conversationId;
     let priorMessages: { type: "user" | "ai"; content: string }[] = [];
 
     if (conversationId) {
-      // Verify conversation belongs to this user
-      const existing = await prisma.conversation.findUnique({
-        where: { id: conversationId },
-        select: { userId: true },
-      });
-
-      if (!existing) {
-        throw new ApiError(404, "Conversation not found");
-      }
-      if (existing.userId !== userId) {
-        throw new ApiError(403, "Forbidden: conversation does not belong to you");
-      }
-
-      priorMessages = await prisma.message.findMany({
-        where: { conversationId },
-        orderBy: { createdAt: "asc" },
-        select: { type: true, content: true },
-      });
+      // Use ConversationService to get and assert ownership
+      const conversation = await ConversationService.get(conversationId, userId);
+      priorMessages = conversation.messages.map(m => ({
+        type: m.type as "user" | "ai",
+        content: m.content
+      }));
     } else {
-      // Create a new conversation with a title derived from the query
-      const title = data.query.slice(0, 80) + (data.query.length > 80 ? "…" : "");
-      const conversation = await prisma.conversation.create({
-        data: { userId, title },
-      });
+      // Create a new conversation
+      const title = input.query.slice(0, 80) + (input.query.length > 80 ? "…" : "");
+      const conversation = await ConversationService.create(userId, title);
       conversationId = conversation.id;
     }
 
@@ -54,11 +35,12 @@ export class CivicAnalysisService {
       data: {
         conversationId,
         type: "user",
-        content: data.query,
+        content: input.query,
       },
     });
 
-    const messages = buildPrompt(data.query, priorMessages);
+    // --- Prepare system prompt & messages ---
+    const messages = buildPrompt(input.query, priorMessages);
     let analysis;
 
     try {
