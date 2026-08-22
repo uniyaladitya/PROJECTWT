@@ -19,9 +19,9 @@ export class AgentService {
     if (conversationId) {
       // Use ConversationService to get and assert ownership
       const conversation = await ConversationService.get(conversationId, userId);
-      priorMessages = conversation.messages.map(m => ({
+      priorMessages = conversation.messages.map((m) => ({
         type: m.type as "user" | "ai",
-        content: m.content
+        content: m.content,
       }));
     } else {
       // Create a new conversation
@@ -40,7 +40,7 @@ export class AgentService {
     });
 
     // --- Prepare system prompt & messages ---
-    const messages = buildPrompt(input.query, priorMessages);
+    const promptData = buildPrompt(input.query, priorMessages);
     let analysis;
 
     try {
@@ -48,8 +48,8 @@ export class AgentService {
         model: gemma,
         schema: analysisSchema,
         schemaName: "CivicAnalysis",
-        messages,
-        abortSignal: AbortSignal.timeout(30000), // 30 seconds timeout
+        system: promptData.system,
+        messages: promptData.messages,
         repairText: async ({ text }) => {
           const start = text.indexOf("{");
           const end = text.lastIndexOf("}");
@@ -59,16 +59,11 @@ export class AgentService {
       analysis = result.object;
     } catch (error) {
       console.error("Structured civic analysis failed:", error);
-      
-      // If error is a timeout, throw immediately
-      if (error instanceof Error && error.name === "TimeoutError") {
-        throw new ApiError(504, "The analysis model timed out");
-      }
 
-      const fallback = await generateText({ 
-        model: gemma, 
-        messages,
-        abortSignal: AbortSignal.timeout(30000), // 30 seconds timeout
+      const fallback = await generateText({
+        model: gemma,
+        system: promptData.system,
+        messages: promptData.messages,
       });
       const start = fallback.text.indexOf("{");
       const end = fallback.text.lastIndexOf("}");

@@ -1,4 +1,5 @@
 import { prisma } from "../../../db/prisma";
+import { qdrantClient } from "../../../db/vector-db/connect";
 import { HealthCheckResponse } from "../types";
 
 export const checkHealth = async (): Promise<HealthCheckResponse> => {
@@ -16,8 +17,9 @@ export const checkHealth = async (): Promise<HealthCheckResponse> => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     response.services.prisma.status = "up";
-  } catch (error: any) {
-    response.services.prisma.message = error?.message || "Failed to connect to Prisma DB";
+  } catch (error: unknown) {
+    response.services.prisma.message =
+      error instanceof Error ? error.message : "Failed to connect to Prisma DB";
     response.status = "error";
   }
 
@@ -25,19 +27,20 @@ export const checkHealth = async (): Promise<HealthCheckResponse> => {
   try {
     const vectorDbUrl = process.env.VECTOR_DB_URL;
     if (vectorDbUrl) {
-      // Placeholder for actual vector DB connection check
+      await qdrantClient.getCollections();
       response.services.vectorDb.status = "up";
     } else {
       response.services.vectorDb.message = "VECTOR_DB_URL is not configured";
       response.status = "error";
     }
-  } catch (error: any) {
-    response.services.vectorDb.message = error?.message || "Failed to verify Vector DB";
+  } catch (error: unknown) {
+    response.services.vectorDb.message =
+      error instanceof Error ? error.message : "Failed to verify Vector DB";
     response.status = "error";
   }
 
   // 3. Check Keys
-  const requiredKeys = ["OPENAI_API_KEY"];
+  const requiredKeys = ["JWT_SECRET"];
   const missingKeys = requiredKeys.filter((key) => !process.env[key]);
 
   if (missingKeys.length === 0) {
