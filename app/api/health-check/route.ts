@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkHealth } from "../../../lib/features/healthCheck/service/health.service";
+import { checkHealth } from "@/lib/features/healthCheck/service/health.service";
 
 /**
  * @swagger
