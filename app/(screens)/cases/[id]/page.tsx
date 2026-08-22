@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Button, Card, CardContent, CardHeader, CardTitle, ErrorState, LoadingState, Progress, StatusBadge } from '@/components/common';
 import { ArrowLeft, Calendar, CheckCircle2, FileText } from 'lucide-react';
@@ -9,7 +9,8 @@ import { apiClient } from '@/lib/api';
 import type { CivicCase } from '@/types';
 import { useTranslations } from '@/lib/i18n';
 
-export default function CaseDetailsPage({ params }: { params: { id: string } }) {
+export default function CaseDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const t = useTranslations();
   const router = useRouter();
   const [caseData, setCaseData] = useState<CivicCase | null>(null);
@@ -17,11 +18,12 @@ export default function CaseDetailsPage({ params }: { params: { id: string } }) 
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    apiClient.getCase(params.id).then((response) => {
+    if (!id) return;
+    apiClient.getCase(id).then((response) => {
       setCaseData(response.data ?? null);
       setError(!response.data);
     }).catch(() => setError(true)).finally(() => setLoading(false));
-  }, [params.id]);
+  }, [id]);
 
   const docs = caseData?.documents || [];
   const timeline = caseData?.timeline || [];

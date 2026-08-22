@@ -1,4 +1,5 @@
 import { prisma } from "../../../db/prisma";
+import { qdrantClient } from "../../../db/vector-db/connect";
 import { HealthCheckResponse } from "../types";
 
 export const checkHealth = async (): Promise<HealthCheckResponse> => {
@@ -25,7 +26,7 @@ export const checkHealth = async (): Promise<HealthCheckResponse> => {
   try {
     const vectorDbUrl = process.env.VECTOR_DB_URL;
     if (vectorDbUrl) {
-      // Placeholder for actual vector DB connection check
+      await qdrantClient.getCollections();
       response.services.vectorDb.status = "up";
     } else {
       response.services.vectorDb.message = "VECTOR_DB_URL is not configured";
@@ -37,7 +38,7 @@ export const checkHealth = async (): Promise<HealthCheckResponse> => {
   }
 
   // 3. Check Keys
-  const requiredKeys = ["OPENAI_API_KEY"];
+  const requiredKeys = ["JWT_SECRET"];
   const missingKeys = requiredKeys.filter((key) => !process.env[key]);
 
   if (missingKeys.length === 0) {
@@ -49,3 +50,4 @@ export const checkHealth = async (): Promise<HealthCheckResponse> => {
 
   return response;
 };
+
