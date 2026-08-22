@@ -9,7 +9,35 @@ import type {
   HealthStatus,
   Review,
   ReviewList,
+  Message,
+  TimelineEvent,
 } from '@/types';
+
+/** Shape of a raw conversation object returned by the backend before client-side normalization. */
+interface RawConversationDoc {
+  id: string;
+  documentName?: string;
+  fileName?: string;
+  fileUrl?: string;
+  createdAt?: string;
+}
+
+interface RawConversation {
+  id: string;
+  userId?: string;
+  title?: string;
+  description?: string;
+  status?: Conversation['status'];
+  progress?: number;
+  nextAction?: string;
+  deadline?: string;
+  updatedAt?: string;
+  createdAt?: string;
+  _count?: { messages: number; documents: number };
+  messages?: Message[];
+  documents?: RawConversationDoc[];
+  timeline?: TimelineEvent[];
+}
 
 class ApiClient {
   private client: AxiosInstance;
@@ -154,7 +182,7 @@ class ApiClient {
   }
 
   // Conversations / Cases
-  private formatConversation(conv: any): Conversation {
+  private formatConversation(conv: RawConversation): Conversation {
     return {
       id: conv.id,
       userId: conv.userId,
@@ -169,7 +197,7 @@ class ApiClient {
       updatedAt: conv.updatedAt || new Date().toISOString(),
       _count: conv._count,
       messages: conv.messages,
-      documents: (conv.documents || []).map((d: any) => ({
+      documents: (conv.documents ?? []).map((d) => ({
         id: d.id,
         documentName: d.documentName || d.fileName || 'document.pdf',
         fileName: d.documentName || d.fileName || 'document.pdf',
@@ -196,7 +224,7 @@ class ApiClient {
     if (data.success && Array.isArray(data.data)) {
       return {
         ...data,
-        data: data.data.map((c: any) => this.formatConversation(c)),
+        data: (data.data as RawConversation[]).map((c) => this.formatConversation(c)),
       };
     }
     return data;
@@ -323,12 +351,12 @@ class ApiClient {
     return { success: true, data: allDocs };
   }
 
-  async deleteDocument(id: string): Promise<ApiResponse<void>> {
+  async deleteDocument(_id: string): Promise<ApiResponse<void>> {
     return { success: true, message: 'Document removed' };
   }
 
   // Reviews
-  async getReviews(params?: { page?: number; pageSize?: number; rating?: number; search?: string; sort?: string }): Promise<ApiResponse<ReviewList>> {
+  async getReviews(_params?: { page?: number; pageSize?: number; rating?: number; search?: string; sort?: string }): Promise<ApiResponse<ReviewList>> {
     return {
       success: true,
       data: {
@@ -362,11 +390,11 @@ class ApiClient {
     return this.createReview(payload);
   }
 
-  async deleteReview(id: string): Promise<ApiResponse<void>> {
+  async deleteReview(_id: string): Promise<ApiResponse<void>> {
     return { success: true, message: 'Review deleted' };
   }
 
-  async markReviewHelpful(id: string): Promise<ApiResponse<{ helpfulCount: number; helpful: boolean }>> {
+  async markReviewHelpful(_id: string): Promise<ApiResponse<{ helpfulCount: number; helpful: boolean }>> {
     return { success: true, data: { helpfulCount: 1, helpful: true } };
   }
 }

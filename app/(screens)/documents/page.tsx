@@ -33,8 +33,8 @@ export default function DocumentsPage() {
     }).catch(() => setError(true)).finally(() => setLoading(false));
   }, []);
 
-  const visibleDocuments = documents.filter((document) =>
-    (document.fileName || (document as any).documentName || '').toLowerCase().includes(searchQuery.toLowerCase())
+   const visibleDocuments = documents.filter((document) =>
+    (document.fileName || (document as DocumentPreview & { documentName?: string }).documentName || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
