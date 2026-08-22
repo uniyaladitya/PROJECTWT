@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance } from "axios";
 import type {
   ApiResponse,
   Document,
@@ -11,7 +11,7 @@ import type {
   ReviewList,
   Message,
   TimelineEvent,
-} from '@/types';
+} from "@/types";
 
 /** Shape of a raw conversation object returned by the backend before client-side normalization. */
 interface RawConversationDoc {
@@ -27,7 +27,7 @@ interface RawConversation {
   userId?: string;
   title?: string;
   description?: string;
-  status?: Conversation['status'];
+  status?: Conversation["status"];
   progress?: number;
   nextAction?: string;
   deadline?: string;
@@ -44,17 +44,17 @@ class ApiClient {
 
   constructor() {
     this.client = axios.create({
-      baseURL: '/api',
+      baseURL: "/api",
       timeout: 30000,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     // Request interceptor: Attach JWT Bearer token if present in localStorage
     this.client.interceptors.request.use((config) => {
-      if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('authToken');
+      if (typeof window !== "undefined") {
+        const token = localStorage.getItem("authToken");
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -67,12 +67,12 @@ class ApiClient {
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          if (typeof window !== 'undefined') {
-            localStorage.removeItem('authToken');
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("authToken");
           }
         }
         return Promise.reject(error);
-      }
+      },
     );
   }
 
@@ -81,72 +81,82 @@ class ApiClient {
    * Auto-registers a guest session if the user is unauthenticated.
    */
   async ensureAuthenticated(): Promise<string> {
-    if (typeof window === 'undefined') return '';
-    let token = localStorage.getItem('authToken');
+    if (typeof window === "undefined") return "";
+    let token = localStorage.getItem("authToken");
     if (!token) {
       try {
         const randomId = Math.floor(Math.random() * 100000);
         const guestEmail = `guest_${randomId}@civic.app`;
-        const res = await this.signup('Civic Guest', guestEmail, 'civicPassword123!');
+        const res = await this.signup("Civic Guest", guestEmail, "civicPassword123!");
         if (res.success && res.data?.token) {
           token = res.data.token;
-          localStorage.setItem('authToken', token);
+          localStorage.setItem("authToken", token);
         }
       } catch (err) {
-        console.warn('Auto guest registration failed:', err);
+        console.warn("Auto guest registration failed:", err);
       }
     }
-    return token || '';
+    return token || "";
   }
 
   // Health Check
   async getHealthCheck(): Promise<ApiResponse<HealthStatus>> {
-    const { data } = await this.client.get('/health-check');
+    const { data } = await this.client.get("/health-check");
     return data;
   }
 
   // Authentication
-  async login(email: string, password: string): Promise<ApiResponse<{ user: User; token: string }>> {
-    const { data } = await this.client.post('/auth/login', { email, password });
+  async login(
+    email: string,
+    password: string,
+  ): Promise<ApiResponse<{ user: User; token: string }>> {
+    const { data } = await this.client.post("/auth/login", { email, password });
     if (data.success && data.data?.token) {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('authToken', data.data.token);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("authToken", data.data.token);
       }
     }
     return data;
   }
 
-  async signup(name: string, email: string, password: string): Promise<ApiResponse<{ user: User; token: string }>> {
-    const { data } = await this.client.post('/auth/signup', { name, email, password });
+  async signup(
+    name: string,
+    email: string,
+    password: string,
+  ): Promise<ApiResponse<{ user: User; token: string }>> {
+    const { data } = await this.client.post("/auth/signup", { name, email, password });
     if (data.success && data.data?.token) {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('authToken', data.data.token);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("authToken", data.data.token);
       }
     }
     return data;
   }
 
   async logout(): Promise<void> {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('authToken');
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("authToken");
     }
   }
 
   async getCurrentUser(): Promise<ApiResponse<User>> {
     await this.ensureAuthenticated();
-    const { data } = await this.client.get('/users/me');
+    const { data } = await this.client.get("/users/me");
     return data;
   }
 
   async updateProfile(name: string): Promise<ApiResponse<User>> {
     await this.ensureAuthenticated();
-    const { data } = await this.client.patch('/users/me', { name });
+    const { data } = await this.client.patch("/users/me", { name });
     return data;
   }
 
-  async changePassword(oldPassword: string, newPassword: string): Promise<ApiResponse<{ message: string }>> {
+  async changePassword(
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<ApiResponse<{ message: string }>> {
     await this.ensureAuthenticated();
-    const { data } = await this.client.post('/users/me/password', { oldPassword, newPassword });
+    const { data } = await this.client.post("/users/me/password", { oldPassword, newPassword });
     return data;
   }
 
@@ -157,7 +167,7 @@ class ApiClient {
   // Civic Query Analysis
   async analyze(query: string, conversationId?: string): Promise<ApiResponse<AnalyzeResponse>> {
     await this.ensureAuthenticated();
-    const { data } = await this.client.post('/analyze', { query, conversationId });
+    const { data } = await this.client.post("/analyze", { query, conversationId });
     return data;
   }
 
@@ -171,10 +181,10 @@ class ApiClient {
         data: {
           id: documentId,
           documentId,
-          status: 'completed',
+          status: "completed",
           createdAt: new Date().toISOString(),
-          decision: data.data?.message || 'Document analysis queued',
-          explanation: 'Document attached for vector processing.',
+          decision: data.data?.message || "Document analysis queued",
+          explanation: "Document attached for vector processing.",
         },
       };
     }
@@ -186,33 +196,33 @@ class ApiClient {
     return {
       id: conv.id,
       userId: conv.userId,
-      title: conv.title || 'Untitled Case',
-      description: conv.description || 'Civic issue analysis case',
-      status: conv.status || 'active',
+      title: conv.title || "Untitled Case",
+      description: conv.description || "Civic issue analysis case",
+      status: conv.status || "active",
       progress: conv.progress ?? 65,
-      nextAction: conv.nextAction || 'Review guidance steps',
-      deadline: conv.deadline || '30 days',
-      lastUpdated: conv.updatedAt ? new Date(conv.updatedAt).toLocaleDateString() : 'Just now',
+      nextAction: conv.nextAction || "Review guidance steps",
+      deadline: conv.deadline || "30 days",
+      lastUpdated: conv.updatedAt ? new Date(conv.updatedAt).toLocaleDateString() : "Just now",
       createdAt: conv.createdAt || new Date().toISOString(),
       updatedAt: conv.updatedAt || new Date().toISOString(),
       _count: conv._count,
       messages: conv.messages,
       documents: (conv.documents ?? []).map((d) => ({
         id: d.id,
-        documentName: d.documentName || d.fileName || 'document.pdf',
-        fileName: d.documentName || d.fileName || 'document.pdf',
-        fileUrl: d.fileUrl || '#',
+        documentName: d.documentName || d.fileName || "document.pdf",
+        fileName: d.documentName || d.fileName || "document.pdf",
+        fileUrl: d.fileUrl || "#",
         createdAt: d.createdAt,
-        status: 'uploaded' as const,
+        status: "uploaded" as const,
       })),
       timeline: conv.timeline || [
         {
-          id: '1',
-          title: 'Query Submitted',
-          description: 'Initial civic issue filed for AI analysis',
-          date: conv.createdAt ? new Date(conv.createdAt).toLocaleDateString() : 'Today',
-          type: 'document_uploaded',
-          status: 'completed',
+          id: "1",
+          title: "Query Submitted",
+          description: "Initial civic issue filed for AI analysis",
+          date: conv.createdAt ? new Date(conv.createdAt).toLocaleDateString() : "Today",
+          type: "document_uploaded",
+          status: "completed",
         },
       ],
     };
@@ -220,7 +230,7 @@ class ApiClient {
 
   async getConversations(): Promise<ApiResponse<Conversation[]>> {
     await this.ensureAuthenticated();
-    const { data } = await this.client.get('/conversations');
+    const { data } = await this.client.get("/conversations");
     if (data.success && Array.isArray(data.data)) {
       return {
         ...data,
@@ -252,7 +262,9 @@ class ApiClient {
 
   async createConversation(title?: string): Promise<ApiResponse<Conversation>> {
     await this.ensureAuthenticated();
-    const { data } = await this.client.post('/conversations', { title: title || 'New Conversation' });
+    const { data } = await this.client.post("/conversations", {
+      title: title || "New Conversation",
+    });
     if (data.success && data.data) {
       return {
         ...data,
@@ -304,16 +316,16 @@ class ApiClient {
       if (convRes.success && convRes.data?.id) {
         targetConversationId = convRes.data.id;
       } else {
-        throw new Error('Could not initialize conversation for document upload');
+        throw new Error("Could not initialize conversation for document upload");
       }
     }
 
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('conversationId', targetConversationId);
+    formData.append("file", file);
+    formData.append("conversationId", targetConversationId);
 
-    const { data } = await this.client.post('/documents', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+    const { data } = await this.client.post("/documents", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
 
     if (data.success && data.data) {
@@ -324,10 +336,10 @@ class ApiClient {
           id: doc.id,
           documentName: doc.documentName || file.name,
           fileName: doc.documentName || file.name,
-          fileUrl: doc.fileUrl || '#',
+          fileUrl: doc.fileUrl || "#",
           conversationId: doc.conversationId,
           createdAt: doc.createdAt,
-          status: 'uploaded',
+          status: "uploaded",
         },
       };
     }
@@ -352,16 +364,26 @@ class ApiClient {
   }
 
   async deleteDocument(_id: string): Promise<ApiResponse<void>> {
-    return { success: true, message: 'Document removed' };
+    return { success: true, message: "Document removed" };
   }
 
   // Reviews
-  async getReviews(_params?: { page?: number; pageSize?: number; rating?: number; search?: string; sort?: string }): Promise<ApiResponse<ReviewList>> {
+  async getReviews(_params?: {
+    page?: number;
+    pageSize?: number;
+    rating?: number;
+    search?: string;
+    sort?: string;
+  }): Promise<ApiResponse<ReviewList>> {
     return {
       success: true,
       data: {
         reviews: [],
-        summary: { averageRating: 4.9, totalReviews: 120, distribution: { 5: 110, 4: 8, 3: 2, 2: 0, 1: 0 } },
+        summary: {
+          averageRating: 4.9,
+          totalReviews: 120,
+          distribution: { 5: 110, 4: 8, 3: 2, 2: 0, 1: 0 },
+        },
         page: 1,
         pageSize: 10,
         totalPages: 1,
@@ -369,13 +391,17 @@ class ApiClient {
     };
   }
 
-  async createReview(payload: { rating: number; reviewText: string; category?: string }): Promise<ApiResponse<Review>> {
+  async createReview(payload: {
+    rating: number;
+    reviewText: string;
+    category?: string;
+  }): Promise<ApiResponse<Review>> {
     return {
       success: true,
       data: {
         id: Date.now().toString(),
-        userId: '1',
-        user: { displayName: 'Verified User' },
+        userId: "1",
+        user: { displayName: "Verified User" },
         rating: payload.rating,
         reviewText: payload.reviewText,
         category: payload.category,
@@ -386,15 +412,20 @@ class ApiClient {
     };
   }
 
-  async updateReview(id: string, payload: { rating: number; reviewText: string; category?: string }): Promise<ApiResponse<Review>> {
+  async updateReview(
+    id: string,
+    payload: { rating: number; reviewText: string; category?: string },
+  ): Promise<ApiResponse<Review>> {
     return this.createReview(payload);
   }
 
   async deleteReview(_id: string): Promise<ApiResponse<void>> {
-    return { success: true, message: 'Review deleted' };
+    return { success: true, message: "Review deleted" };
   }
 
-  async markReviewHelpful(_id: string): Promise<ApiResponse<{ helpfulCount: number; helpful: boolean }>> {
+  async markReviewHelpful(
+    _id: string,
+  ): Promise<ApiResponse<{ helpfulCount: number; helpful: boolean }>> {
     return { success: true, data: { helpfulCount: 1, helpful: true } };
   }
 }

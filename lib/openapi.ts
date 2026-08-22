@@ -196,7 +196,10 @@ registry.registerPath({
     },
   },
   responses: {
-    200: { description: "Conversation created", content: { "application/json": { schema: conversationSchema } } },
+    200: {
+      description: "Conversation created",
+      content: { "application/json": { schema: conversationSchema } },
+    },
     401: { description: "Authentication required" },
   },
 });

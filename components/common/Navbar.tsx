@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Menu, X, LogOut, Settings, Bell, Home, Activity } from 'lucide-react';
-import { useAppStore } from '@/lib/store';
-import { Brand } from './Brand';
-import { useTranslations } from '@/lib/i18n';
-import { apiClient } from '@/lib/api';
-import { LanguageSelector } from './LanguageSelector';
-import { ThemeSelector } from './ThemeSelector';
-import { Button } from './Button';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Menu, X, LogOut, Settings, Bell, Home, Activity } from "lucide-react";
+import { useAppStore } from "@/lib/store";
+import { Brand } from "./Brand";
+import { useTranslations } from "@/lib/i18n";
+import { apiClient } from "@/lib/api";
+import { LanguageSelector } from "./LanguageSelector";
+import { ThemeSelector } from "./ThemeSelector";
+import { Button } from "./Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
   const { user, language, sidebarOpen, setSidebarOpen } = useAppStore();
@@ -25,7 +25,9 @@ export function Navbar() {
   const router = useRouter();
   const t = useTranslations();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [health, setHealth] = useState<{ ok: boolean; db?: string; vectorDb?: string }>({ ok: false });
+  const [health, setHealth] = useState<{ ok: boolean; db?: string; vectorDb?: string }>({
+    ok: false,
+  });
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -35,11 +37,11 @@ export function Navbar() {
     const checkHealth = async () => {
       try {
         const res = await apiClient.getHealthCheck();
-        if (res.status === 'ok' || (res.data && res.data.status === 'ok')) {
+        if (res.status === "ok" || (res.data && res.data.status === "ok")) {
           setHealth({
             ok: true,
-            db: res.data?.details?.database || 'ok',
-            vectorDb: res.data?.details?.vectorDb || 'ok',
+            db: res.data?.details?.database || "ok",
+            vectorDb: res.data?.details?.vectorDb || "ok",
           });
         } else {
           setHealth({ ok: false });
@@ -57,14 +59,14 @@ export function Navbar() {
     try {
       await apiClient.logout();
     } finally {
-      localStorage.removeItem('authToken');
+      localStorage.removeItem("authToken");
       reset();
-      router.push('/login');
+      router.push("/login");
     }
   };
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-border bg-card/95 shadow-sm backdrop-blur">
+    <nav className="border-border bg-card/95 sticky top-0 z-40 border-b shadow-sm backdrop-blur">
       <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-2 sm:px-6">
         <div className="flex min-w-0 items-center gap-2 sm:gap-4">
           <Button
@@ -72,34 +74,34 @@ export function Navbar() {
             size="icon"
             onClick={() => setSidebarOpen(!sidebarOpen)}
             type="button"
-            aria-label={t('toggleSidebar')}
+            aria-label={t("toggleSidebar")}
           >
-            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <Brand />
             <Link
               href="/"
-              className="flex items-center gap-1 rounded-md px-2 py-2 text-sm text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              aria-label={t('home')}
+              className="text-foreground hover:bg-muted focus-visible:ring-ring flex items-center gap-1 rounded-md px-2 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+              aria-label={t("home")}
             >
-              <Home className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('home')}</span>
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("home")}</span>
             </Link>
           </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-1 sm:gap-4">
           {/* Real-time Health Check Badge */}
-          <div className="hidden items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-xs font-medium md:flex">
+          <div className="border-border hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium md:flex">
             <span
               className={`h-2 w-2 rounded-full ${
-                health.ok ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
+                health.ok ? "animate-pulse bg-emerald-500" : "bg-amber-500"
               }`}
             />
-            <Activity className="h-3.5 w-3.5 text-muted-foreground" />
+            <Activity className="text-muted-foreground h-3.5 w-3.5" />
             <span className="text-muted-foreground">
-              {health.ok ? 'Backend Ready' : 'Connecting...'}
+              {health.ok ? "Backend Ready" : "Connecting..."}
             </span>
           </div>
 
@@ -112,17 +114,21 @@ export function Navbar() {
             type="button"
             onClick={() => setShowNotifications(!showNotifications)}
             aria-expanded={showNotifications}
-            aria-label={t('notifications')}
+            aria-label={t("notifications")}
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="h-5 w-5" />
           </Button>
 
           {/* User Menu */}
           {user ? (
             <DropdownMenu>
-              <DropdownMenuTrigger render={<Button type="button" variant="ghost" className="h-auto p-2" />}>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20">
-                  <span className="text-sm font-medium text-primary">{user.name.charAt(0).toUpperCase()}</span>
+              <DropdownMenuTrigger
+                render={<Button type="button" variant="ghost" className="h-auto p-2" />}
+              >
+                <div className="bg-primary/20 flex h-8 w-8 items-center justify-center rounded-full">
+                  <span className="text-primary text-sm font-medium">
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
                 </div>
                 <span className="hidden text-sm font-medium sm:inline">{user.name}</span>
               </DropdownMenuTrigger>
@@ -133,21 +139,25 @@ export function Navbar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem render={<Link href="/settings" />}>
                   <Settings className="h-4 w-4" />
-                  {t('settings')}
+                  {t("settings")}
                 </DropdownMenuItem>
                 <DropdownMenuItem variant="destructive" onSelect={handleLogout}>
                   <LogOut className="h-4 w-4" />
-                  {t('logout')}
+                  {t("logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <div className="flex items-center gap-2">
               <Link href="/login">
-                <Button variant="ghost" size="sm">Log In</Button>
+                <Button variant="ghost" size="sm">
+                  Log In
+                </Button>
               </Link>
               <Link href="/signup">
-                <Button variant="primary" size="sm">Sign Up</Button>
+                <Button variant="primary" size="sm">
+                  Sign Up
+                </Button>
               </Link>
             </div>
           )}

@@ -18,7 +18,8 @@ export const checkHealth = async (): Promise<HealthCheckResponse> => {
     await prisma.$queryRaw`SELECT 1`;
     response.services.prisma.status = "up";
   } catch (error: unknown) {
-    response.services.prisma.message = error instanceof Error ? error.message : "Failed to connect to Prisma DB";
+    response.services.prisma.message =
+      error instanceof Error ? error.message : "Failed to connect to Prisma DB";
     response.status = "error";
   }
 
@@ -33,7 +34,8 @@ export const checkHealth = async (): Promise<HealthCheckResponse> => {
       response.status = "error";
     }
   } catch (error: unknown) {
-    response.services.vectorDb.message = error instanceof Error ? error.message : "Failed to verify Vector DB";
+    response.services.vectorDb.message =
+      error instanceof Error ? error.message : "Failed to verify Vector DB";
     response.status = "error";
   }
 
@@ -50,4 +52,3 @@ export const checkHealth = async (): Promise<HealthCheckResponse> => {
 
   return response;
 };
-

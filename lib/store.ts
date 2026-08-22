@@ -1,8 +1,8 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { User, Document, Analysis, CivicCase, UploadState, LoadingState } from '@/types';
-import type { SupportedLanguage } from '@/lib/i18n';
-import type { ThemeName } from '@/lib/themes';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import type { User, Document, Analysis, CivicCase, UploadState, LoadingState } from "@/types";
+import type { SupportedLanguage } from "@/lib/i18n";
+import type { ThemeName } from "@/lib/themes";
 
 interface AppStore {
   // Auth
@@ -56,8 +56,8 @@ interface AppStore {
   // UI State
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
-  notifications: Array<{ id: string; message: string; type: 'success' | 'error' | 'info' }>;
-  addNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
+  notifications: Array<{ id: string; message: string; type: "success" | "error" | "info" }>;
+  addNotification: (message: string, type?: "success" | "error" | "info") => void;
   removeNotification: (id: string) => void;
 
   // General
@@ -67,22 +67,22 @@ interface AppStore {
 const initialState = {
   user: null,
   isAuthenticated: false,
-  authLoading: 'idle' as LoadingState,
-  language: 'en' as const,
+  authLoading: "idle" as LoadingState,
+  language: "en" as const,
   hasSelectedLanguage: false,
-  theme: 'civic-blue' as const,
+  theme: "civic-blue" as const,
   documents: [],
   currentDocument: null,
   uploadState: {
-    status: 'idle' as LoadingState,
+    status: "idle" as LoadingState,
     progress: 0,
   },
   currentAnalysis: null,
   analyses: [],
-  analysisLoading: 'idle' as LoadingState,
+  analysisLoading: "idle" as LoadingState,
   cases: [],
   currentCase: null,
-  casesLoading: 'idle' as LoadingState,
+  casesLoading: "idle" as LoadingState,
   sidebarOpen: true,
   notifications: [],
 };
@@ -139,7 +139,7 @@ export const useAppStore = create<AppStore>()(
 
       // UI State
       setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
-      addNotification: (message, type = 'info') => {
+      addNotification: (message, type = "info") => {
         const id = Date.now().toString();
         set((state) => ({
           notifications: [...state.notifications, { id, message, type }],
@@ -160,7 +160,7 @@ export const useAppStore = create<AppStore>()(
       reset: () => set(initialState),
     }),
     {
-      name: 'civic-guide-store',
+      name: "civic-guide-store",
       partialize: (state) => ({
         language: state.language,
         hasSelectedLanguage: state.hasSelectedLanguage,
@@ -175,10 +175,10 @@ export const useAppStore = create<AppStore>()(
         return {
           ...currentState,
           ...persisted,
-          language: persisted.hasSelectedLanguage ? persisted.language ?? 'en' : 'en',
+          language: persisted.hasSelectedLanguage ? (persisted.language ?? "en") : "en",
           hasSelectedLanguage: Boolean(persisted.hasSelectedLanguage),
         };
       },
-    }
-  )
+    },
+  ),
 );

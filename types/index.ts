@@ -1,4 +1,4 @@
-import type { SupportedLanguage } from '@/lib/i18n';
+import type { SupportedLanguage } from "@/lib/i18n";
 
 // User and Authentication
 export interface User {
@@ -52,7 +52,7 @@ export interface GrayArea {
 }
 
 export interface AnalysisResult {
-  category: 'RTI' | 'TENANCY' | 'WELFARE' | 'GENERAL' | 'UNKNOWN';
+  category: "RTI" | "TENANCY" | "WELFARE" | "GENERAL" | "UNKNOWN";
   summary: string;
   issues: string[];
   recommendedActions: string[];
@@ -73,8 +73,8 @@ export interface Evidence {
   id: string;
   name: string;
   description: string;
-  status: 'verified' | 'missing' | 'pending' | 'rejected';
-  importance?: 'required' | 'recommended' | 'optional';
+  status: "verified" | "missing" | "pending" | "rejected";
+  importance?: "required" | "recommended" | "optional";
 }
 
 // Document
@@ -88,13 +88,13 @@ export interface Document {
   conversationId?: string;
   createdAt?: string;
   uploadedAt?: string;
-  status?: 'uploaded' | 'analyzing' | 'completed' | 'failed' | 'pending';
+  status?: "uploaded" | "analyzing" | "completed" | "failed" | "pending";
 }
 
 // Message
 export interface Message {
   id: string;
-  type: 'user' | 'ai';
+  type: "user" | "ai";
   content: string; // JSON string for 'ai' type
   createdAt: string;
   parsedAnalysis?: AnalysisResult;
@@ -106,7 +106,7 @@ export interface Conversation {
   userId?: string;
   title: string;
   description?: string;
-  status?: 'active' | 'action_required' | 'pending' | 'completed';
+  status?: "active" | "action_required" | "pending" | "completed";
   progress?: number;
   nextAction?: string;
   deadline?: string;
@@ -133,13 +133,13 @@ export interface Analysis {
   confidence?: number;
   explanation?: string;
   recommendedAction?: string;
-  status: 'pending' | 'review_required' | 'completed';
+  status: "pending" | "review_required" | "completed";
   createdAt: string;
   missingEvidence?: string[];
   missingInformation?: string[];
   requiredEvidence?: Evidence[];
   analysisResult?: AnalysisResult;
-  category?: 'RTI' | 'TENANCY' | 'WELFARE' | 'GENERAL' | 'UNKNOWN';
+  category?: "RTI" | "TENANCY" | "WELFARE" | "GENERAL" | "UNKNOWN";
   summary?: string;
   issues?: string[];
   recommendedActions?: string[];
@@ -154,8 +154,13 @@ export interface TimelineEvent {
   title: string;
   description?: string;
   date: string;
-  type: 'document_uploaded' | 'analysis_completed' | 'evidence_required' | 'deadline' | 'action_required';
-  status: 'completed' | 'pending';
+  type:
+    | "document_uploaded"
+    | "analysis_completed"
+    | "evidence_required"
+    | "deadline"
+    | "action_required";
+  status: "completed" | "pending";
 }
 
 // Health Check Status
@@ -171,10 +176,12 @@ export interface HealthStatus {
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
-  error?: {
-    code: number;
-    message: string;
-  } | string;
+  error?:
+    | {
+        code: number;
+        message: string;
+      }
+    | string;
   message?: string;
   status?: string;
 }
@@ -193,7 +200,7 @@ export interface SignupFormData {
 }
 
 // UI States
-export type LoadingState = 'idle' | 'loading' | 'success' | 'error';
+export type LoadingState = "idle" | "loading" | "success" | "error";
 
 export interface UploadState {
   status: LoadingState;

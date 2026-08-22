@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 
 interface BrandProps {
   href?: string | null;
@@ -9,9 +9,11 @@ interface BrandProps {
   inverted?: boolean;
 }
 
-export function Brand({ href = '/', compact = false, inverted = false }: BrandProps) {
+export function Brand({ href = "/", compact = false, inverted = false }: BrandProps) {
   const content = (
-    <span className={`brand-lockup ${compact ? 'brand-lockup-compact' : ''} ${inverted ? 'brand-lockup-inverted' : ''}`}>
+    <span
+      className={`brand-lockup ${compact ? "brand-lockup-compact" : ""} ${inverted ? "brand-lockup-inverted" : ""}`}
+    >
       <Image
         src="/nyayg-sathi-logo.png"
         alt="NYAYG SATHI"
@@ -27,5 +29,11 @@ export function Brand({ href = '/', compact = false, inverted = false }: BrandPr
     </span>
   );
 
-  return href ? <Link href={href} aria-label="NYAYG SATHI home">{content}</Link> : content;
+  return href ? (
+    <Link href={href} aria-label="NYAYG SATHI home">
+      {content}
+    </Link>
+  ) : (
+    content
+  );
 }
