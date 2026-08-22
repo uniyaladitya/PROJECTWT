@@ -48,6 +48,29 @@ class ApiClient {
     );
   }
 
+  /**
+   * Helper to ensure a JWT token exists before calling protected endpoints.
+   * Auto-registers a guest session if the user is unauthenticated.
+   */
+  async ensureAuthenticated(): Promise<string> {
+    if (typeof window === 'undefined') return '';
+    let token = localStorage.getItem('authToken');
+    if (!token) {
+      try {
+        const randomId = Math.floor(Math.random() * 100000);
+        const guestEmail = `guest_${randomId}@civic.app`;
+        const res = await this.signup('Civic Guest', guestEmail, 'civicPassword123!');
+        if (res.success && res.data?.token) {
+          token = res.data.token;
+          localStorage.setItem('authToken', token);
+        }
+      } catch (err) {
+        console.warn('Auto guest registration failed:', err);
+      }
+    }
+    return token || '';
+  }
+
   // Health Check
   async getHealthCheck(): Promise<ApiResponse<HealthStatus>> {
     const { data } = await this.client.get('/health-check');
@@ -82,16 +105,19 @@ class ApiClient {
   }
 
   async getCurrentUser(): Promise<ApiResponse<User>> {
+    await this.ensureAuthenticated();
     const { data } = await this.client.get('/users/me');
     return data;
   }
 
   async updateProfile(name: string): Promise<ApiResponse<User>> {
+    await this.ensureAuthenticated();
     const { data } = await this.client.patch('/users/me', { name });
     return data;
   }
 
   async changePassword(oldPassword: string, newPassword: string): Promise<ApiResponse<{ message: string }>> {
+    await this.ensureAuthenticated();
     const { data } = await this.client.post('/users/me/password', { oldPassword, newPassword });
     return data;
   }
@@ -102,12 +128,14 @@ class ApiClient {
 
   // Civic Query Analysis
   async analyze(query: string, conversationId?: string): Promise<ApiResponse<AnalyzeResponse>> {
+    await this.ensureAuthenticated();
     const { data } = await this.client.post('/analyze', { query, conversationId });
     return data;
   }
 
   // Legacy wrapper for single document analysis calls
   async analyzeDocument(documentId: string): Promise<ApiResponse<Analysis>> {
+    await this.ensureAuthenticated();
     const { data } = await this.client.post(`/documents/${documentId}/analyze`);
     if (data.success) {
       return {
@@ -163,6 +191,7 @@ class ApiClient {
   }
 
   async getConversations(): Promise<ApiResponse<Conversation[]>> {
+    await this.ensureAuthenticated();
     const { data } = await this.client.get('/conversations');
     if (data.success && Array.isArray(data.data)) {
       return {
@@ -178,6 +207,7 @@ class ApiClient {
   }
 
   async getConversation(id: string): Promise<ApiResponse<Conversation>> {
+    await this.ensureAuthenticated();
     const { data } = await this.client.get(`/conversations/${id}`);
     if (data.success && data.data) {
       return {
@@ -193,6 +223,7 @@ class ApiClient {
   }
 
   async createConversation(title?: string): Promise<ApiResponse<Conversation>> {
+    await this.ensureAuthenticated();
     const { data } = await this.client.post('/conversations', { title: title || 'New Conversation' });
     if (data.success && data.data) {
       return {
@@ -208,6 +239,7 @@ class ApiClient {
   }
 
   async updateConversationTitle(id: string, title: string): Promise<ApiResponse<Conversation>> {
+    await this.ensureAuthenticated();
     const { data } = await this.client.patch(`/conversations/${id}`, { title });
     if (data.success && data.data) {
       return {
@@ -226,6 +258,7 @@ class ApiClient {
   }
 
   async deleteConversation(id: string): Promise<ApiResponse<void>> {
+    await this.ensureAuthenticated();
     const { data } = await this.client.delete(`/conversations/${id}`);
     return data;
   }
@@ -236,6 +269,7 @@ class ApiClient {
 
   // Documents
   async uploadDocument(file: File, conversationId?: string): Promise<ApiResponse<Document>> {
+    await this.ensureAuthenticated();
     let targetConversationId = conversationId;
     if (!targetConversationId) {
       const convRes = await this.createConversation(`Analysis: ${file.name}`);
@@ -274,6 +308,7 @@ class ApiClient {
   }
 
   async getDocuments(): Promise<ApiResponse<Document[]>> {
+    await this.ensureAuthenticated();
     const convsRes = await this.getConversations();
     if (!convsRes.success || !convsRes.data) {
       return { success: true, data: [] };
