@@ -95,7 +95,7 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            <Button variant="primary" size="lg" className="w-full" isLoading={isLoading}>
+            <Button type="submit" variant="primary" size="lg" className="w-full" isLoading={isLoading}>
               {t('signIn')}
             </Button>
 
