@@ -14,6 +14,7 @@ import {
 } from "@/components/common";
 import { Upload, File, FileText, X } from "lucide-react";
 import { VoiceInput } from "@/components/upload/VoiceInput";
+import { ChatInterface } from "@/components/chat/ChatInterface";
 import { apiClient } from "@/lib/api";
 import { useAppStore } from "@/lib/store";
 import { useTranslations } from "@/lib/i18n";
@@ -106,8 +107,9 @@ export default function AnalyzePage() {
           </p>
         </div>
 
-        <div className="mb-8">
+        <div className="mb-8 space-y-6">
           <VoiceInput onSubmit={(question) => console.info("Voice question:", question)} />
+          <ChatInterface />
         </div>
 
         {uploadStatus === "success" ? (
